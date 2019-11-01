@@ -15,7 +15,7 @@ func Start() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Route("/", func(r chi.Router) {
-		r.Get("/", handlers.ListBooking) // GET /articles
+		r.Get("/", handlers.ListBookingHandler) // GET /articles
 		//r.Get("/{month}-{day}-{year}", listArticlesByDate) // GET /articles/01-16-2017 TODO get by date
 
 		//r.Post("/", CreateBooking)       // POST /articles
