@@ -1,9 +1,9 @@
 package main
 
 import (
-	log "github.com/sirupsen/logrus"
+	"booking_v2/server"
 )
 
 func main() {
-	log.Info(321)
+	server.Start()
 }
