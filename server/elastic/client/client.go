@@ -15,12 +15,12 @@ func init() {
 		elastic.SetURL(config.GlobalConfig.ElasticAddress),
 	)
 	if err != nil {
-		log.Fatal(err)
+		log.WithField("method", "elastic.client.init").Fatal(err)
 	}
 
 	_, err = GlobalClient.IndexExists(config.GlobalConfig.BookingIndex).Do(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		log.WithField("method", "elastic.client.init").Fatal(err)
 	}
 	log.Info("Connection to ES cluster finished. Address: " + config.GlobalConfig.ElasticAddress)
 }
