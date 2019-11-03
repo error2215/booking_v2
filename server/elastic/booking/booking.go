@@ -14,8 +14,8 @@ import (
 	"booking_v2/server/models/booking"
 )
 
-func (r *Request) ListBooking() []*booking.Booking {
-	query := r.BuildQuery()
+func (r *request) ListBooking() []*booking.Booking {
+	query := r.buildSearchQuery()
 	hits, err := client.GetClient().Search().
 		Query(query).
 		//Sort()
@@ -42,11 +42,11 @@ func (r *Request) ListBooking() []*booking.Booking {
 	return res
 }
 
-func (r *Request) AddBooking(res booking.Booking) error {
+func (r *request) AddBooking(res booking.Booking) error {
 	ourTime := time.Unix(res.Time.Local().Unix()-60*60*6, 0)
 	timeStr := ourTime.Format(time.RFC850)[:len(res.Time.Format(time.RFC850))-7]
 	res.TimeString = timeStr
-
+	res.Id = getLastId() + 1
 	_, err := client.GetClient().Index().
 		Index(config.GlobalConfig.BookingIndex).
 		BodyJson(res).
@@ -60,7 +60,18 @@ func (r *Request) AddBooking(res booking.Booking) error {
 	return nil
 }
 
-func GetLastId() int {
+func (r *request) DeleteBooking() {
+	_, err := client.GetClient().Delete().
+		Index(config.GlobalConfig.BookingIndex).
+		Id(r.queryFilters.id).
+		Refresh("true").
+		Do(context.Background())
+	if err != nil {
+		log.Error(err)
+	}
+}
+
+func getLastId() int {
 	hits, err := client.GetClient().Search().
 		Index(config.GlobalConfig.BookingIndex).
 		Query(elastic.NewBoolQuery()).

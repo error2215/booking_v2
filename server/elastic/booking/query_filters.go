@@ -6,23 +6,29 @@ const (
 	idField = "id"
 )
 
-type Request struct {
-	QueryFilters
+type request struct {
+	queryFilters QueryFilters
 }
 
 type QueryFilters struct {
-	Id string
+	id string
 }
 
-func (r *Request) ParseQueryFilters() {
-	r.QueryFilters = QueryFilters{}
+func NewRequest() *request {
+	return &request{}
 }
 
-func (r *Request) BuildQuery() *elastic.BoolQuery {
+func (r *request) QueryFilters(id string) {
+	r.queryFilters = QueryFilters{
+		id: id,
+	}
+}
+
+func (r *request) buildSearchQuery() *elastic.BoolQuery {
 	query := elastic.NewBoolQuery()
 
-	if r.QueryFilters.Id != "" {
-		query.Must(elastic.NewTermQuery(idField, r.QueryFilters.Id))
+	if r.queryFilters.id != "" {
+		query.Must(elastic.NewTermQuery(idField, r.queryFilters.id))
 	}
 
 	return query

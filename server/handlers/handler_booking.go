@@ -13,7 +13,8 @@ import (
 )
 
 func ListBookingHandler(w http.ResponseWriter, r *http.Request) {
-
+	data := elst.NewRequest().ListBooking()
+	store.ExecuteTemplate(w, "index", data)
 }
 
 func AddBookingHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,15 +23,26 @@ func AddBookingHandler(w http.ResponseWriter, r *http.Request) {
 
 func PostAddBookingHandler(w http.ResponseWriter, r *http.Request) {
 	result := parseAddForm(r)
-	req := elst.Request{}
+	req := elst.NewRequest()
 	err := req.AddBooking(result)
 	if err == nil {
-		_, _ = http.Get("/booking")
+		http.Redirect(w, r, "/booking", 301)
 	} else {
 		log.Error(err)
 		_, _ = w.Write([]byte("Something went wrong, your booking wasn't added"))
 	}
 
+}
+
+func DeleteBookingHandler(w http.ResponseWriter, r *http.Request) {
+	_ = r.ParseForm()
+	id := r.Form["id"]
+	if len(id) > 0 {
+		req := elst.NewRequest()
+		req.QueryFilters(id[0])
+		req.DeleteBooking()
+	}
+	http.Redirect(w, r, "/booking", 301)
 }
 
 func parseAddForm(r *http.Request) booking.Booking {
@@ -45,7 +57,6 @@ func parseAddForm(r *http.Request) booking.Booking {
 	return booking.Booking{
 		Author:  r.Form["author"][0],
 		Message: r.Form["message"][0],
-		Id:      elst.GetLastId() + 1,
 		Time:    neededTime.Add(time.Hour * 3),
 	}
 }

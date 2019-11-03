@@ -20,6 +20,8 @@ func Start() {
 	r.Route("/booking", func(r chi.Router) {
 		r.Get("/", handlers.ListBookingHandler) // GET all bookings
 
+		r.Post("/delete", handlers.DeleteBookingHandler) // POST /delete -> delete booking by id parametr
+
 		r.Get("/add", handlers.AddBookingHandler)      // GET /add
 		r.Post("/add", handlers.PostAddBookingHandler) // POST /add
 
