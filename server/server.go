@@ -21,7 +21,7 @@ func Start() {
 		r.Get("/", handlers.ListBookingHandler) // GET all bookings
 
 		r.Get("/add", handlers.AddBookingHandler)      // GET /add
-		r.Post("/add", handlers.PostAddBookingHandler) // POST
+		r.Post("/add", handlers.PostAddBookingHandler) // POST /add
 
 		//r.Post("/", CreateBooking)       // POST /articles
 		//r.Get("/search", searchArticles) // GET /articles/search
