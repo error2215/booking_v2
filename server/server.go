@@ -17,6 +17,8 @@ import (
 func Start() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(handlers.DeletePastRecordsHandler)
+
 	r.Route("/booking", func(r chi.Router) {
 		r.Get("/", handlers.ListBookingHandler) // GET all bookings
 

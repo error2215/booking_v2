@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -38,11 +39,23 @@ func DeleteBookingHandler(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	id := r.Form["id"]
 	if len(id) > 0 {
-		req := elst.NewRequest()
-		req.QueryFilters(id[0])
-		req.DeleteBooking()
+		elst.NewRequest().QueryFilters(id[0]).DeleteBooking()
 	}
 	http.Redirect(w, r, "/booking", 301)
+}
+
+func DeletePastRecordsHandler(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		data := elst.NewRequest().ListBooking()
+		for _, book := range data {
+			unixRecordTime := book.Time.Local()
+			if unixRecordTime.Add(time.Hour*-6).Unix() < time.Now().Local().Unix() {
+				elst.NewRequest().QueryFilters(strconv.Itoa(book.Id)).DeleteBooking()
+			}
+		}
+		next.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(fn)
 }
 
 func parseAddForm(r *http.Request) booking.Booking {
@@ -57,6 +70,6 @@ func parseAddForm(r *http.Request) booking.Booking {
 	return booking.Booking{
 		Author:  r.Form["author"][0],
 		Message: r.Form["message"][0],
-		Time:    neededTime.Add(time.Hour * 3),
+		Time:    neededTime.Add(time.Hour * 4),
 	}
 }
