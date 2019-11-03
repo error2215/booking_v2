@@ -1,10 +1,10 @@
 package server
 
 import (
+	"booking_v2/server/store"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -38,29 +38,11 @@ func Start() {
 
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "static")
-	FileServer(r, "/static", http.Dir(filesDir))
+	store.FileServer(r, "/static", http.Dir(filesDir))
 
 	log.Info("Application started on port: " + config.GlobalConfig.AppPort)
 	err := http.ListenAndServe(":"+config.GlobalConfig.AppPort, r)
 	if err != nil {
 		log.Info(err)
 	}
-}
-
-func FileServer(r chi.Router, path string, root http.FileSystem) {
-	if strings.ContainsAny(path, "{}*") {
-		panic("FileServer does not permit URL parameters.")
-	}
-
-	fs := http.StripPrefix(path, http.FileServer(root))
-
-	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
-		path += "/"
-	}
-	path += "*"
-
-	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
-		fs.ServeHTTP(w, r)
-	})
 }
