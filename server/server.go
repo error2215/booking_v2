@@ -22,25 +22,17 @@ func Start() {
 	r.Route("/booking", func(r chi.Router) {
 		r.Get("/", handlers.ListBookingHandler) // GET all bookings
 
-		r.Post("/delete", handlers.DeleteBookingHandler) // POST /delete -> delete booking by id parametr
+		r.Post("/delete", handlers.DeleteBookingHandler) // POST /delete -> delete booking by id parameter
 
 		r.Get("/add", handlers.AddBookingHandler)      // GET /add
 		r.Post("/add", handlers.PostAddBookingHandler) // POST /add
-
-		//r.Post("/", CreateBooking)       // POST /articles
-		//r.Get("/search", searchArticles) // GET /articles/search
-
-		// Regexp url parameters:
-		//r.Get("/{articleSlug:[a-z-]+}", getArticleBySlug) // GET /articles/home-is-toronto
-
-		// Subrouters:
-		//r.Route("/{articleID}", func(r chi.Router) {
-		//	r.Use(ArticleCtx)
-		//	r.Get("/", getArticle)       // GET /articles/123
-		//	r.Put("/", updateArticle)    // PUT /articles/123
-		//	r.Delete("/", deleteArticle) // DELETE /articles/123
-		//})
 	})
+
+	r.Get("/login", handlers.LoginHandler)
+	r.Post("/login", handlers.PostLoginHandler)
+
+	r.Get("/registration", handlers.RegistrationHandler)
+	r.Post("/registration", handlers.PostRegistrationHandler)
 
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "static")

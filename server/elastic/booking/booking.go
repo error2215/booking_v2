@@ -18,7 +18,7 @@ func (r *request) ListBooking() []*booking.Booking {
 	query := r.buildSearchQuery()
 	hits, err := client.GetClient().Search().
 		Query(query).
-		//Sort()
+		Sort("time", true).
 		Size(500).
 		Index(config.GlobalConfig.BookingIndex).
 		Do(context.Background())

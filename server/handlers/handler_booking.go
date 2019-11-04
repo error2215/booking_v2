@@ -65,7 +65,7 @@ func parseAddForm(r *http.Request) booking.Booking {
 	trueDate := strings.ReplaceAll(timeValue[6:], "/", ".")
 	neededTime, err := time.Parse("01.02.2006 15:04", trueDate+" "+trueTime)
 	if err != nil {
-		log.Error(err)
+		log.WithField("method", "parseAddForm").Error(err)
 	}
 	return booking.Booking{
 		Author:  r.Form["author"][0],
