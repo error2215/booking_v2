@@ -24,8 +24,7 @@ func AddBookingHandler(w http.ResponseWriter, r *http.Request) {
 
 func PostAddBookingHandler(w http.ResponseWriter, r *http.Request) {
 	result := parseAddForm(r)
-	req := elst.NewRequest()
-	err := req.AddBooking(result)
+	err := elst.NewRequest().AddBooking(result)
 	if err == nil {
 		http.Redirect(w, r, "/booking", 301)
 	} else {
@@ -37,9 +36,9 @@ func PostAddBookingHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteBookingHandler(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
-	id := r.Form["id"]
-	if len(id) > 0 {
-		elst.NewRequest().QueryFilters(id[0]).DeleteBooking()
+	id := r.Form.Get("id")
+	if id != "" {
+		elst.NewRequest().QueryFilters(id).DeleteBooking()
 	}
 	http.Redirect(w, r, "/booking", 301)
 }

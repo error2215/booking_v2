@@ -23,6 +23,11 @@ func init() {
 	if err != nil {
 		log.WithField("method", "elastic.client.init").Fatal(err)
 	}
+	_, err = client.IndexExists(config.GlobalConfig.UserIndex).Do(context.Background())
+	if err != nil {
+		log.WithField("method", "elastic.client.init").Fatal(err)
+	}
+
 	log.Info("Connection to ES cluster finished. Address: " + config.GlobalConfig.ElasticAddress)
 }
 

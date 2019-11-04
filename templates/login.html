@@ -8,20 +8,20 @@
 </head>
 <body>
     {{ template "header"}}
-    {{ $lengthError := len .ErrorMessages }} {{ if ne $lengthError 0 }}
-        {{range .ErrorMessages}}
-            <div class="alert alert-danger">
-                {{ .}}
-            </div>
-        {{end}}
-    {{ end }}
-    {{ $lengthSuccess := len .SuccessMessages }} {{ if ne $lengthSuccess 0 }}
-        {{range .SuccessMessages}}
-            <div class="alert alert-danger">
-                {{ .}}
-            </div>
-        {{end}}
-    {{ end }}
+{{/*    {{ $lengthError := len .ErrorMessages }} {{ if ne $lengthError 0 }}*/}}
+{{/*        {{range .ErrorMessages}}*/}}
+{{/*            <div class="alert alert-danger">*/}}
+{{/*                {{ .}}*/}}
+{{/*            </div>*/}}
+{{/*        {{end}}*/}}
+{{/*    {{ end }}*/}}
+{{/*    {{ $lengthSuccess := len .SuccessMessages }} {{ if ne $lengthSuccess 0 }}*/}}
+{{/*        {{range .SuccessMessages}}*/}}
+{{/*            <div class="alert alert-danger">*/}}
+{{/*                {{ .}}*/}}
+{{/*            </div>*/}}
+{{/*        {{end}}*/}}
+{{/*    {{ end }}*/}}
     <form action="/login" method="post">
         <div class="form-group">
             <label for="login">Login</label>
