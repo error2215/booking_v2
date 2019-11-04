@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/olivere/elastic/v7"
+
 	"booking_v2/server/models/user"
 
 	log "github.com/sirupsen/logrus"
@@ -46,4 +48,22 @@ func (r *request) AddUserToES(res *user.User) error {
 		return err
 	}
 	return nil
+}
+
+func GetLastUserId() int {
+	hits, err := client.GetClient().Search().
+		Index(config.GlobalConfig.BookingIndex).
+		Query(elastic.NewBoolQuery()).
+		Sort("id", false).
+		Size(1).
+		Do(context.Background())
+	if err != nil {
+		log.Error(err)
+	}
+	if hits.TotalHits() == 0 {
+		return 1
+	}
+	idStr := hits.Hits.Hits[0].Id
+	idInt, _ := strconv.Atoi(idStr)
+	return idInt
 }

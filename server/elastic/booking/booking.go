@@ -80,6 +80,9 @@ func getLastId() int {
 	if err != nil {
 		log.Error(err)
 	}
+	if hits.TotalHits() == 0 {
+		return 1
+	}
 	idStr := hits.Hits.Hits[0].Id
 	idInt, _ := strconv.Atoi(idStr)
 	return idInt

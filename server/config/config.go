@@ -13,6 +13,7 @@ type Config struct {
 	BookingIndex   string
 	UserIndex      string
 	SessionId      string
+	HashSalt       string
 }
 
 var GlobalConfig Config
@@ -27,5 +28,6 @@ func init() {
 		BookingIndex:   os.Getenv("BOOKING_INDEX"),
 		UserIndex:      os.Getenv("USER_INDEX"),
 		SessionId:      os.Getenv("SESSION_ID"),
+		HashSalt:       os.Getenv("HASH_SALT"),
 	}
 }
