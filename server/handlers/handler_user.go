@@ -9,8 +9,8 @@ import (
 
 	elst "booking_v2/server/elastic/user"
 	model "booking_v2/server/models/user"
+	"booking_v2/server/session"
 	"booking_v2/server/store"
-	"booking_v2/server/utils"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +26,7 @@ func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	if foundUser := elst.NewRequest().QueryFilters("", login).GetUser(); foundUser != nil {
 		err := bcrypt.CompareHashAndPassword([]byte(foundUser.PassHash), []byte(password))
 		if err == nil {
-			utils.SetSession(foundUser.Login, check, w)
+			session.SetSession(foundUser, check, w)
 			http.Redirect(w, r, "/booking", 301)
 			return
 		}
@@ -104,7 +104,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		user := utils.GetUserName(r)
+		user := session.GetUserFromSession(r).Name
 		if user == "" {
 			//TODO
 		}

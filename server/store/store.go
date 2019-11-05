@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 
-	"booking_v2/server/utils"
+	"booking_v2/server/session"
 )
 
 var funcMap = template.FuncMap{}
@@ -45,7 +45,7 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 func ExecuteTemplate(r *http.Request, w io.Writer, name string, data interface{}) {
 	PageData := pageData{
 		Data:     data,
-		UserName: utils.GetUserName(r),
+		UserName: session.GetUserFromSession(r).Name,
 	}
 	err := GlobalTemplateStore.ExecuteTemplate(w, name, PageData)
 	if err != nil {
