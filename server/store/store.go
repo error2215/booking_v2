@@ -2,7 +2,6 @@ package store
 
 import (
 	"html/template"
-	"io"
 	"net/http"
 	"strings"
 
@@ -21,8 +20,10 @@ func init() {
 }
 
 type pageData struct {
-	Data interface{}
-	User *user.User
+	Data            interface{}
+	User            *user.User
+	ErrorMessages   []string
+	SuccessMessages []string
 }
 
 func FileServer(r chi.Router, path string, root http.FileSystem) {
@@ -43,10 +44,12 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 	})
 }
 
-func ExecuteTemplate(r *http.Request, w io.Writer, name string, data interface{}) {
+func ExecuteTemplate(r *http.Request, w http.ResponseWriter, name string, data interface{}) {
 	PageData := pageData{
-		Data: data,
-		User: session.GetUserFromSession(r),
+		Data:            data,
+		User:            session.GetUser(r),
+		ErrorMessages:   session.GetErrorMessages(r, w),
+		SuccessMessages: session.GetSuccessMessages(r, w),
 	}
 	err := GlobalTemplateStore.ExecuteTemplate(w, name, PageData)
 	if err != nil {

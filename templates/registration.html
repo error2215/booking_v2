@@ -10,20 +10,16 @@
 <body>
     {{template "header" .}}
     <form  action="/registration" method="post">
-{{/*        {{ $lengthError := len .ErrorMessages }} {{ if ne $lengthError 0 }}*/}}
-{{/*            {{range .ErrorMessages}}*/}}
-{{/*                <div class="alert alert-danger">*/}}
-{{/*                    {{ .}}*/}}
-{{/*                </div>*/}}
-{{/*            {{end}}*/}}
-{{/*        {{ end }}*/}}
-{{/*        {{ $lengthSuccess := len .SuccessMessages }} {{ if ne $lengthSuccess 0 }}*/}}
-{{/*            {{range .SuccessMessages}}*/}}
-{{/*                <div class="alert alert-success">*/}}
-{{/*                    {{ .}}*/}}
-{{/*                </div>*/}}
-{{/*            {{end}}*/}}
-{{/*        {{ end }}*/}}
+        {{range .ErrorMessages}}
+            <div class="alert alert-danger">
+                {{ .}}
+            </div>
+        {{end}}
+        {{range .SuccessMessages}}
+            <div class="alert alert-success">
+                {{ .}}
+            </div>
+        {{end}}
         <div class="form-group">
             <label for="name">Name</label>
             <input type="text" class="form-control" id="name" minlength="3" maxlength="30" placeholder="Your name" name="name" required>

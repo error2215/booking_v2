@@ -26,15 +26,16 @@ func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	if foundUser := elst.NewRequest().QueryFilters("", login).GetUser(); foundUser != nil {
 		err := bcrypt.CompareHashAndPassword([]byte(foundUser.PassHash), []byte(password))
 		if err == nil {
-			session.SetSession(foundUser, check, w)
+			session.SetUser(foundUser, check, w)
 			http.Redirect(w, r, "/booking", 301)
 			return
 		}
-		log.WithField("method", "PostLoginHandler").Error(err)
-		_, _ = w.Write([]byte("Password is wrong"))
+		session.SetErrorMessages(w, []string{"Password is wrong"})
+		http.Redirect(w, r, "/login", 301)
 		return
 	}
-	_, _ = w.Write([]byte("Login is wrong"))
+	session.SetErrorMessages(w, []string{"Login is wrong"})
+	http.Redirect(w, r, "/login", 301)
 }
 
 func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,52 +44,54 @@ func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 
 func PostRegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
-	goodValues := validateRegistrationForm(r.Form)
-	if goodValues {
+	errs := validateRegistrationForm(r.Form)
+	if len(errs) == 0 {
 		user := model.Create(r.Form.Get("name"), r.Form.Get("login"), r.Form.Get("password"), elst.GetLastUserId())
 		err := elst.NewRequest().AddUserToES(user)
 		if err != nil {
 			log.WithField("method", "parseAddForm").Error(err)
-			_, _ = w.Write([]byte("Something went wrong, user wasn't added"))
+			session.SetErrorMessages(w, []string{"Something went wrong, please try again later"})
+			http.Redirect(w, r, "/registration", 301)
 			return
 		}
+		session.SetSuccessMessages(w, []string{"You were signed in successfully. Please login now"})
 		http.Redirect(w, r, "/login", 301)
 	} else {
-		_, _ = w.Write([]byte("Something wrong, user wasn't added"))
+		session.SetErrorMessages(w, errs)
+		http.Redirect(w, r, "/registration", 301)
 	}
 }
 
-func validateRegistrationForm(values url.Values) (good bool) {
+func validateRegistrationForm(values url.Values) (errors []string) {
 	login := values.Get("login")
 	name := values.Get("name")
 	password := values.Get("password")
 	password2 := values.Get("password2")
-	good = true
 	if user := elst.NewRequest().QueryFilters("", login).GetUser(); user != nil {
-		good = false
+		errors = append(errors, "Such login is already used")
 	}
 	if password != password2 {
-		good = false
+		errors = append(errors, "Passwords do not match")
 	}
 	if len(password) < 6 {
-		good = false
+		errors = append(errors, "Password length must be more than 6 symbols")
 	}
 	if len(password) > 15 {
-		good = false
+		errors = append(errors, "Password length must be less than 15 symbols")
 	}
 	if len(login) < 3 {
-		good = false
+		errors = append(errors, "Login length must be more than 3 symbols")
 	}
 	if len(login) > 15 {
-		good = false
+		errors = append(errors, "Login length must be less than 15 symbols")
 	}
-	if len(name) < 3 {
-		good = false
+	if len(name) < 1 {
+		errors = append(errors, "Name must be more than 1 symbol")
 	}
 	if len(name) > 30 {
-		good = false
+		errors = append(errors, "Name length must be less than 30 symbols")
 	}
-	return good
+	return errors
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +107,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		user := session.GetUserFromSession(r).Name
+		user := session.GetUser(r).Name
 		if user == "" {
 			//TODO
 		}
