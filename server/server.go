@@ -17,7 +17,8 @@ import (
 func Start() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Use(handlers.DeletePastRecordsHandler)
+	r.Use(handlers.DeletePastRecordsMiddleware)
+	r.Use(handlers.AuthMiddleware)
 
 	r.Route("/booking", func(r chi.Router) {
 		r.Get("/", handlers.ListBookingHandler) // GET all bookings
@@ -30,6 +31,8 @@ func Start() {
 
 	r.Get("/login", handlers.LoginHandler)
 	r.Post("/login", handlers.PostLoginHandler)
+
+	r.Post("/logout", handlers.LogoutHandler)
 
 	r.Get("/registration", handlers.RegistrationHandler)
 	r.Post("/registration", handlers.PostRegistrationHandler)

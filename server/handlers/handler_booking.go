@@ -43,7 +43,7 @@ func DeleteBookingHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/booking", 301)
 }
 
-func DeletePastRecordsHandler(next http.Handler) http.Handler {
+func DeletePastRecordsMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		data := elst.NewRequest().ListBooking()
 		for _, book := range data {

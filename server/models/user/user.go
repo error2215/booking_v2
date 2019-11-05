@@ -11,13 +11,12 @@ import (
 )
 
 type User struct {
-	Id          int       `json:"id"`
-	Name        string    `json:"name"`
-	Login       string    `json:"login"`
-	PassHash    string    `json:"pass_hash"`
-	LoginTokens []string  `json:"login_token"`
-	Created     time.Time `json:"created"`
-	Role        int       `json:"role"`
+	Id       int       `json:"id"`
+	Name     string    `json:"name"`
+	Login    string    `json:"login"`
+	PassHash string    `json:"pass_hash"`
+	Created  time.Time `json:"created"`
+	Role     int       `json:"role"`
 }
 
 func Create(
@@ -40,7 +39,6 @@ func Create(
 		return &User{}
 	}
 	res.PassHash = string(pass) + string(salt)
-	res.LoginTokens = []string{}
 	res.Created = time.Now()
 	return res
 }

@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"booking-master/service"
 	"booking_v2/server/config"
 	elst "booking_v2/server/elastic/user"
 	user2 "booking_v2/server/models/user"
 	"booking_v2/server/store"
+	"booking_v2/server/utils"
 	"net/http"
 	"net/url"
-
-	"github.com/gorilla/sessions"
+	"strconv"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -28,8 +28,10 @@ func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	check := values.Get("check")
 	if foundUser := elst.NewRequest().QueryFilters("", login).GetUser(); foundUser != nil {
 		err := bcrypt.CompareHashAndPassword([]byte(foundUser.PassHash), []byte(password+config.GlobalConfig.HashSalt))
-		if err != nil {
-
+		if err == nil {
+			utils.SetSession(foundUser.Login, check, w)
+			http.Redirect(w, r, "/booking", 301)
+			return
 		}
 		_, _ = w.Write([]byte("Password is wrong"))
 		return
@@ -91,28 +93,27 @@ func validateRegistrationForm(values url.Values) (good bool) {
 	return good
 }
 
-func AuthUser(r *http.Request) {
-	maxAge := 0
-	if r.Form.Get("check") == "true" {
-		maxAge = 60 * 60 * 24 * 30
-	}
-	loginToken := ran(36)
-	// login token to
-	cookie, err := service.CookieStore.Get(r, "auth")
-	if err != nil {
-		log.Error(err)
-	}
-	cookie.Options = &sessions.Options{
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := &http.Cookie{
+		Name:   "session",
+		Value:  "",
 		Path:   "/",
-		MaxAge: maxAge,
+		MaxAge: -1,
 	}
-	cookie.Values["loginToken"] = loginToken
-	cookie.Values["authorized"] = "true"
-	cookie.Values["id"] = id
-	err = sessions.Save(r, w)
-	if err != nil {
-		log.Error(err)
-	}
+	http.SetCookie(w, cookie)
+	http.Redirect(w, r, "/booking", 302)
+}
 
-	return loginToken
+func AuthMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		data := elst.NewRequest().ListBooking()
+		for _, book := range data {
+			unixRecordTime := book.Time.Local()
+			if unixRecordTime.Add(time.Hour*-6).Unix() < time.Now().Local().Unix() {
+				elst.NewRequest().QueryFilters(strconv.Itoa(book.Id)).DeleteBooking()
+			}
+		}
+		next.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(fn)
 }
