@@ -32,7 +32,7 @@ func (r *request) GetUser() *model.User {
 		}
 		return singleRes
 	}
-	return &model.User{}
+	return nil
 }
 
 func (r *request) AddUserToES(res *model.User) error {

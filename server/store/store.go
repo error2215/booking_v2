@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 
+	"booking_v2/server/models/user"
 	"booking_v2/server/session"
 )
 
@@ -20,8 +21,8 @@ func init() {
 }
 
 type pageData struct {
-	Data     interface{}
-	UserName string
+	Data interface{}
+	User *user.User
 }
 
 func FileServer(r chi.Router, path string, root http.FileSystem) {
@@ -44,8 +45,8 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 
 func ExecuteTemplate(r *http.Request, w io.Writer, name string, data interface{}) {
 	PageData := pageData{
-		Data:     data,
-		UserName: session.GetUserFromSession(r).Name,
+		Data: data,
+		User: session.GetUserFromSession(r),
 	}
 	err := GlobalTemplateStore.ExecuteTemplate(w, name, PageData)
 	if err != nil {

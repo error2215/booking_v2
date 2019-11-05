@@ -3,6 +3,7 @@ package session
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/securecookie"
 
@@ -33,11 +34,11 @@ func SetSession(user *user.User, check string, response http.ResponseWriter) {
 	}
 }
 
-func GetUserFromSession(r *http.Request) (res *user.User) {
+func GetUserFromSession(r *http.Request) *user.User {
 	if cookie, err := r.Cookie("session"); err == nil {
 		cookieValue := make(map[string]string)
 		if err = cookieHandler.Decode("session", cookie.Value, &cookieValue); err == nil {
-			res = &user.User{
+			res := &user.User{
 				Name:  cookieValue["name"],
 				Login: cookieValue["login"],
 			}
@@ -45,7 +46,15 @@ func GetUserFromSession(r *http.Request) (res *user.User) {
 			if err == nil {
 				res.Id = id
 			}
+			return res
 		}
 	}
-	return res
+	return &user.User{
+		Id:       0,
+		Name:     "",
+		Login:    "",
+		PassHash: "",
+		Created:  time.Time{},
+		Role:     0,
+	}
 }

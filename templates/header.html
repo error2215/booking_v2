@@ -4,7 +4,7 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/booking">Home</a>
             </li>
-            {{if eq .UserName ""}}
+            {{if eq .User.Login ""}}
                 <li class="nav-item">
                     <a class="nav-link" href="/login">Login</a>
                 </li>
@@ -16,7 +16,7 @@
                     <a class="nav-link" href="/booking/add">Add</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/logout">Logout ({{.UserName}})</a>
+                    <a class="nav-link" href="/logout">Logout ({{.User.Login}})</a>
                 </li>
             {{end}}
         </ul>

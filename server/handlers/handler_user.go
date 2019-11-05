@@ -30,7 +30,7 @@ func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/booking", 301)
 			return
 		}
-		log.WithField("method", "PorstLoginHandler").Error(err)
+		log.WithField("method", "PostLoginHandler").Error(err)
 		_, _ = w.Write([]byte("Password is wrong"))
 		return
 	}

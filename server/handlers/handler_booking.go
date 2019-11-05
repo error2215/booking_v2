@@ -68,7 +68,7 @@ func parseAddForm(r *http.Request) booking.Booking {
 		log.WithField("method", "parseAddForm").Error(err)
 	}
 	return booking.Booking{
-		Author:  session.GetUserFromSession(r).Name,
+		Author:  session.GetUserFromSession(r).Login,
 		Message: r.Form["message"][0],
 		Time:    neededTime.Add(time.Hour * 4),
 	}

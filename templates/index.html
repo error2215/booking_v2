@@ -18,13 +18,16 @@
         </tr>
         </thead>
         <tbody>
+        {{ $user := .User}}
         {{ range .Data}}
             <tr>
                 <th scope="row">{{ .Id}}
-                    <form action="/booking/delete" method="post">
-                        <input type="submit" value="Detele" class="btn btn-outline-danger btn-sm">
-                        <input type="hidden" value="{{ .Id}}" name="id">
-                    </form>
+                    {{ if eq .Author $user.Login}}
+                        <form action="/booking/delete" method="post">
+                            <input type="submit" value="Detele" class="btn btn-outline-danger btn-sm">
+                            <input type="hidden" value="{{ .Id}}" name="id">
+                        </form>
+                    {{end}}
                 </th>
                 <td>{{ .Author}}</td>
                 <td>{{ .TimeString}}</td>
@@ -34,7 +37,7 @@
 
         </tbody>
     </table>
-    {{if ne .UserName ""}}
+    {{if ne .User.Name ""}}
         <form action="/booking/add" method="get">
             <input type="submit" value="Add" class="btn btn-outline-secondary btn-block">
         </form>
