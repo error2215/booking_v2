@@ -11,10 +11,10 @@ import (
 
 	"booking_v2/server/config"
 	"booking_v2/server/elastic/client"
-	"booking_v2/server/models/booking"
+	model "booking_v2/server/models/booking"
 )
 
-func (r *request) ListBooking() []*booking.Booking {
+func (r *request) ListBooking() []*model.Booking {
 	hits, err := client.GetClient().Search().
 		Query(elastic.NewBoolQuery()).
 		Sort("time", true).
@@ -25,12 +25,12 @@ func (r *request) ListBooking() []*booking.Booking {
 		log.WithField("method", "ListBooking").Error(err)
 	}
 
-	var res []*booking.Booking
+	var res []*model.Booking
 	if hits.TotalHits() == 0 {
 		return res
 	}
 	for _, hit := range hits.Hits.Hits {
-		singleRes := &booking.Booking{}
+		singleRes := &model.Booking{}
 		err = json.Unmarshal(hit.Source, &singleRes)
 		if err != nil {
 			log.WithField("method", "ListBooking").Error(err)
@@ -41,7 +41,7 @@ func (r *request) ListBooking() []*booking.Booking {
 	return res
 }
 
-func (r *request) AddBooking(res booking.Booking) error {
+func (r *request) AddBooking(res model.Booking) error {
 	ourTime := time.Unix(res.Time.Local().Unix()-60*60*6, 0)
 	timeStr := ourTime.Format(time.RFC850)[:len(res.Time.Format(time.RFC850))-7]
 	res.TimeString = timeStr

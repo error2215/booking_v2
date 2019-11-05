@@ -1,17 +1,16 @@
 package handlers
 
 import (
-	"booking_v2/server/config"
-	elst "booking_v2/server/elastic/user"
-	user2 "booking_v2/server/models/user"
-	"booking_v2/server/store"
-	"booking_v2/server/utils"
 	"net/http"
 	"net/url"
 
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 
-	log "github.com/sirupsen/logrus"
+	elst "booking_v2/server/elastic/user"
+	model "booking_v2/server/models/user"
+	"booking_v2/server/store"
+	"booking_v2/server/utils"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,12 +24,13 @@ func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	password := values.Get("password")
 	check := values.Get("check")
 	if foundUser := elst.NewRequest().QueryFilters("", login).GetUser(); foundUser != nil {
-		err := bcrypt.CompareHashAndPassword([]byte(foundUser.PassHash), []byte(password+config.GlobalConfig.HashSalt))
+		err := bcrypt.CompareHashAndPassword([]byte(foundUser.PassHash), []byte(password))
 		if err == nil {
 			utils.SetSession(foundUser.Login, check, w)
 			http.Redirect(w, r, "/booking", 301)
 			return
 		}
+		log.WithField("method", "PorstLoginHandler").Error(err)
 		_, _ = w.Write([]byte("Password is wrong"))
 		return
 	}
@@ -45,14 +45,14 @@ func PostRegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	goodValues := validateRegistrationForm(r.Form)
 	if goodValues {
-		user := user2.Create(r.Form.Get("name"), r.Form.Get("login"), r.Form.Get("password"))
+		user := model.Create(r.Form.Get("name"), r.Form.Get("login"), r.Form.Get("password"), elst.GetLastUserId())
 		err := elst.NewRequest().AddUserToES(user)
 		if err != nil {
 			log.WithField("method", "parseAddForm").Error(err)
 			_, _ = w.Write([]byte("Something went wrong, user wasn't added"))
 			return
 		}
-		http.Redirect(w, r, "/registration", 301)
+		http.Redirect(w, r, "/login", 301)
 	} else {
 		_, _ = w.Write([]byte("Something wrong, user wasn't added"))
 	}

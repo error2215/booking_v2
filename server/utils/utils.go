@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"booking_v2/server/config"
 	"net/http"
 
 	"github.com/gorilla/securecookie"
+
+	"booking_v2/server/config"
 )
 
 var cookieHandler = securecookie.New(

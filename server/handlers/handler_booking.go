@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	elst "booking_v2/server/elastic/booking"
 	"booking_v2/server/models/booking"
 	"booking_v2/server/store"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func ListBookingHandler(w http.ResponseWriter, r *http.Request) {

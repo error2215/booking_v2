@@ -1,20 +1,19 @@
 package user
 
 import (
-	"booking_v2/server/config"
-	"booking_v2/server/elastic/client"
 	"context"
 	"encoding/json"
 	"strconv"
 
 	"github.com/olivere/elastic/v7"
-
-	"booking_v2/server/models/user"
-
 	log "github.com/sirupsen/logrus"
+
+	"booking_v2/server/config"
+	"booking_v2/server/elastic/client"
+	model "booking_v2/server/models/user"
 )
 
-func (r *request) GetUser() *user.User {
+func (r *request) GetUser() *model.User {
 	query := r.buildSearchQuery()
 	hits, err := client.GetClient().Search().
 		Index(config.GlobalConfig.UserIndex).
@@ -26,17 +25,17 @@ func (r *request) GetUser() *user.User {
 	}
 	if hits.TotalHits() > 0 {
 		hit := hits.Hits.Hits[0]
-		singleRes := &user.User{}
+		singleRes := &model.User{}
 		err = json.Unmarshal(hit.Source, &singleRes)
 		if err != nil {
 			log.WithField("method", "GetUserByLogin").Error(err)
 		}
 		return singleRes
 	}
-	return &user.User{}
+	return &model.User{}
 }
 
-func (r *request) AddUserToES(res *user.User) error {
+func (r *request) AddUserToES(res *model.User) error {
 	_, err := client.GetClient().Index().
 		Index(config.GlobalConfig.UserIndex).
 		BodyJson(res).
@@ -52,7 +51,7 @@ func (r *request) AddUserToES(res *user.User) error {
 
 func GetLastUserId() int {
 	hits, err := client.GetClient().Search().
-		Index(config.GlobalConfig.BookingIndex).
+		Index(config.GlobalConfig.UserIndex).
 		Query(elastic.NewBoolQuery()).
 		Sort("id", false).
 		Size(1).

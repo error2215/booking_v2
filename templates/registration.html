@@ -7,7 +7,7 @@
     <title>Title</title>
 </head>
 <body>
-    {{template "header"}}
+    {{template "header" .}}
     <form  action="/registration" method="post">
 {{/*        {{ $lengthError := len .ErrorMessages }} {{ if ne $lengthError 0 }}*/}}
 {{/*            {{range .ErrorMessages}}*/}}

@@ -1,15 +1,15 @@
 package store
 
 import (
-	"booking_v2/server/utils"
 	"html/template"
 	"io"
 	"net/http"
 	"strings"
 
+	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 
-	"github.com/go-chi/chi"
+	"booking_v2/server/utils"
 )
 
 var funcMap = template.FuncMap{}

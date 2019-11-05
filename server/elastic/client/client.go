@@ -1,11 +1,12 @@
 package client
 
 import (
-	"booking_v2/server/config"
 	"context"
 
 	"github.com/olivere/elastic/v7"
 	log "github.com/sirupsen/logrus"
+
+	"booking_v2/server/config"
 )
 
 var client *elastic.Client

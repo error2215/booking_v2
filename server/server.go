@@ -1,7 +1,6 @@
 package server
 
 import (
-	"booking_v2/server/store"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -12,6 +11,7 @@ import (
 
 	"booking_v2/server/config"
 	"booking_v2/server/handlers"
+	"booking_v2/server/store"
 )
 
 func Start() {
@@ -32,7 +32,7 @@ func Start() {
 	r.Get("/login", handlers.LoginHandler)
 	r.Post("/login", handlers.PostLoginHandler)
 
-	r.Post("/logout", handlers.LogoutHandler)
+	r.Get("/logout", handlers.LogoutHandler)
 
 	r.Get("/registration", handlers.RegistrationHandler)
 	r.Post("/registration", handlers.PostRegistrationHandler)
