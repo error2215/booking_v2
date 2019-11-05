@@ -64,7 +64,7 @@ func validateRegistrationForm(values url.Values) (good bool) {
 	password := values.Get("password")
 	password2 := values.Get("password2")
 	good = true
-	if user := elst.NewRequest().QueryFilters("", login).GetUser(); user == nil {
+	if user := elst.NewRequest().QueryFilters("", login).GetUser(); user != nil {
 		good = false
 	}
 	if password != password2 {
