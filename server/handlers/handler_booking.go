@@ -15,11 +15,11 @@ import (
 
 func ListBookingHandler(w http.ResponseWriter, r *http.Request) {
 	data := elst.NewRequest().ListBooking()
-	store.ExecuteTemplate(w, "index", data)
+	store.ExecuteTemplate(r, w, "index", data)
 }
 
 func AddBookingHandler(w http.ResponseWriter, r *http.Request) {
-	store.ExecuteTemplate(w, "add", nil)
+	store.ExecuteTemplate(r, w, "add", nil)
 }
 
 func PostAddBookingHandler(w http.ResponseWriter, r *http.Request) {

@@ -7,12 +7,18 @@
             <li class="nav-item">
                 <a class="nav-link" href="/booking/add">Add</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/login">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/registration">Registration</a>
-            </li>
+            {{if eq .UserName ""}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/registration">Registration</a>
+                </li>
+            {{else}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout ({{.UserName}})</a>
+                </li>
+            {{end}}
         </ul>
     </nav>
 {{end}}

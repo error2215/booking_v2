@@ -8,12 +8,14 @@ import (
 )
 
 type Config struct {
-	AppPort        string
-	ElasticAddress string
-	BookingIndex   string
-	UserIndex      string
-	SessionId      string
-	HashSalt       string
+	AppPort         string
+	ElasticAddress  string
+	BookingIndex    string
+	UserIndex       string
+	SessionId       string
+	HashSalt        string
+	SessionHashKey  string
+	SessionBlockKey string
 }
 
 var GlobalConfig Config
@@ -23,11 +25,13 @@ func init() {
 		log.Warn("Error loading .env file")
 	}
 	GlobalConfig = Config{
-		AppPort:        os.Getenv("APP_PORT"),
-		ElasticAddress: os.Getenv("ELASTIC_ADDRESS"),
-		BookingIndex:   os.Getenv("BOOKING_INDEX"),
-		UserIndex:      os.Getenv("USER_INDEX"),
-		SessionId:      os.Getenv("SESSION_ID"),
-		HashSalt:       os.Getenv("HASH_SALT"),
+		AppPort:         os.Getenv("APP_PORT"),
+		ElasticAddress:  os.Getenv("ELASTIC_ADDRESS"),
+		BookingIndex:    os.Getenv("BOOKING_INDEX"),
+		UserIndex:       os.Getenv("USER_INDEX"),
+		SessionId:       os.Getenv("SESSION_ID"),
+		HashSalt:        os.Getenv("HASH_SALT"),
+		SessionHashKey:  os.Getenv("SESSION_HASH_KEY"),
+		SessionBlockKey: os.Getenv("SESSION_BLOCK_KEY"),
 	}
 }

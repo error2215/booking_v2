@@ -1,6 +1,7 @@
 package store
 
 import (
+	"booking_v2/server/utils"
 	"html/template"
 	"io"
 	"net/http"
@@ -16,6 +17,11 @@ var GlobalTemplateStore *template.Template
 
 func init() {
 	GlobalTemplateStore = template.Must(template.New("main").Funcs(funcMap).ParseGlob("templates/*.html"))
+}
+
+type pageData struct {
+	Data     interface{}
+	UserName string
 }
 
 func FileServer(r chi.Router, path string, root http.FileSystem) {
@@ -36,8 +42,12 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 	})
 }
 
-func ExecuteTemplate(w io.Writer, name string, data interface{}) {
-	err := GlobalTemplateStore.ExecuteTemplate(w, name, data)
+func ExecuteTemplate(r *http.Request, w io.Writer, name string, data interface{}) {
+	PageData := pageData{
+		Data:     data,
+		UserName: utils.CheckUserAuth(r),
+	}
+	err := GlobalTemplateStore.ExecuteTemplate(w, name, PageData)
 	if err != nil {
 		logrus.WithField("method", "ListBookingHandler").Error(err)
 	}

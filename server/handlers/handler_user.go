@@ -8,8 +8,6 @@ import (
 	"booking_v2/server/utils"
 	"net/http"
 	"net/url"
-	"strconv"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -17,7 +15,7 @@ import (
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	store.ExecuteTemplate(w, "login", nil)
+	store.ExecuteTemplate(r, w, "login", nil)
 }
 
 func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +38,7 @@ func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegistrationHandler(w http.ResponseWriter, r *http.Request) {
-	store.ExecuteTemplate(w, "registration", nil)
+	store.ExecuteTemplate(r, w, "registration", nil)
 }
 
 func PostRegistrationHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,12 +104,9 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		data := elst.NewRequest().ListBooking()
-		for _, book := range data {
-			unixRecordTime := book.Time.Local()
-			if unixRecordTime.Add(time.Hour*-6).Unix() < time.Now().Local().Unix() {
-				elst.NewRequest().QueryFilters(strconv.Itoa(book.Id)).DeleteBooking()
-			}
+		user := utils.CheckUserAuth(r)
+		if user == "" {
+			//TODO
 		}
 		next.ServeHTTP(w, r)
 	}
