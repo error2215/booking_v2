@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"booking_v2/server/utils"
 	"net/http"
 	"strconv"
 	"strings"
@@ -67,7 +68,7 @@ func parseAddForm(r *http.Request) booking.Booking {
 		log.WithField("method", "parseAddForm").Error(err)
 	}
 	return booking.Booking{
-		Author:  r.Form["author"][0],
+		Author:  utils.GetUserName(r),
 		Message: r.Form["message"][0],
 		Time:    neededTime.Add(time.Hour * 4),
 	}

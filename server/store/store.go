@@ -45,7 +45,7 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 func ExecuteTemplate(r *http.Request, w io.Writer, name string, data interface{}) {
 	PageData := pageData{
 		Data:     data,
-		UserName: utils.CheckUserAuth(r),
+		UserName: utils.GetUserName(r),
 	}
 	err := GlobalTemplateStore.ExecuteTemplate(w, name, PageData)
 	if err != nil {

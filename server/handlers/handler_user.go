@@ -104,7 +104,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		user := utils.CheckUserAuth(r)
+		user := utils.GetUserName(r)
 		if user == "" {
 			//TODO
 		}

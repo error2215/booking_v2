@@ -29,7 +29,7 @@ func SetSession(userName string, check string, response http.ResponseWriter) {
 	}
 }
 
-func CheckUserAuth(r *http.Request) (userName string) {
+func GetUserName(r *http.Request) (userName string) {
 	if cookie, err := r.Cookie("session"); err == nil {
 		cookieValue := make(map[string]string)
 		if err = cookieHandler.Decode("session", cookie.Value, &cookieValue); err == nil {
