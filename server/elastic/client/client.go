@@ -20,13 +20,25 @@ func init() {
 		log.WithField("method", "elastic.client.init").Fatal(err)
 	}
 
-	_, err = client.IndexExists(config.GlobalConfig.BookingIndex).Do(context.Background())
+	exists, err := client.IndexExists(config.GlobalConfig.BookingIndex).Do(context.Background())
 	if err != nil {
 		log.WithField("method", "elastic.client.init").Fatal(err)
 	}
-	_, err = client.IndexExists(config.GlobalConfig.UserIndex).Do(context.Background())
+	if !exists {
+		_, err = client.CreateIndex(config.GlobalConfig.BookingIndex).Do(context.Background())
+		if err != nil {
+			log.WithField("method", "elastic.client.init").Fatal(err)
+		}
+	}
+	existsUser, err := client.IndexExists(config.GlobalConfig.UserIndex).Do(context.Background())
 	if err != nil {
 		log.WithField("method", "elastic.client.init").Fatal(err)
+	}
+	if !existsUser {
+		_, err = client.CreateIndex(config.GlobalConfig.UserIndex).Do(context.Background())
+		if err != nil {
+			log.WithField("method", "elastic.client.init").Fatal(err)
+		}
 	}
 
 	log.Info("Connection to ES cluster finished. Address: " + config.GlobalConfig.ElasticAddress)
