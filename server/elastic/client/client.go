@@ -25,7 +25,9 @@ func init() {
 		log.WithField("method", "elastic.client.init").Fatal(err)
 	}
 	if !exists {
-		_, err = client.CreateIndex(config.GlobalConfig.BookingIndex).Do(context.Background())
+		// need for sorting, if there are no this fields in start mapping, app will break down, other part will be created automatically
+		mapping := `{"mappings":{"properties":{"time":{"type":"date"}, "id":{"type": "long"}}}}`
+		_, err = client.CreateIndex(config.GlobalConfig.BookingIndex).BodyString(mapping).Do(context.Background())
 		if err != nil {
 			log.WithField("method", "elastic.client.init").Fatal(err)
 		}
@@ -35,7 +37,9 @@ func init() {
 		log.WithField("method", "elastic.client.init").Fatal(err)
 	}
 	if !existsUser {
-		_, err = client.CreateIndex(config.GlobalConfig.UserIndex).Do(context.Background())
+		// need for sorting, if there is no this field in start mapping, app will break down, other part will be created automatically
+		mapping := `{"mappings":{"properties":{"id":{"type":"long"}}}}`
+		_, err = client.CreateIndex(config.GlobalConfig.UserIndex).BodyString(mapping).Do(context.Background())
 		if err != nil {
 			log.WithField("method", "elastic.client.init").Fatal(err)
 		}

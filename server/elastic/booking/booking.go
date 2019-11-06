@@ -81,7 +81,7 @@ func getLastId() int {
 		log.Error(err)
 	}
 	if hits.TotalHits() == 0 {
-		return 1
+		return 0
 	}
 	idStr := hits.Hits.Hits[0].Id
 	idInt, _ := strconv.Atoi(idStr)
